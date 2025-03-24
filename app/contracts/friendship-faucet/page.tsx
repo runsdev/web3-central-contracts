@@ -47,7 +47,8 @@ const contractABI = [
 ];
 
 // Replace with your deployed contract address
-const contractAddress = "0xECE91dE3036544FA603b5cDEA07d7B655c717Fed";
+const contractAddress =
+  process.env.NEXT_PUBLIC_CONTRACT_ADDRESS_FRIENDSHIP_FAUCET || "";
 const ownerAddress = process.env.NEXT_PUBLIC_OWNER_WALLET_ADDRESS;
 
 export default function FriendshipFaucetPage() {
