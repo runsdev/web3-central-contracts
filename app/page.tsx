@@ -7,11 +7,11 @@ import Image from "next/image";
 
 export default function Home() {
   const [contracts, setContracts] = useState([
-    { name: "Token Contract", path: "/contracts/token" },
-    { name: "NFT Marketplace", path: "/contracts/marketplace" },
-    { name: "Staking", path: "/contracts/staking" },
-    { name: "Governance", path: "/contracts/governance" },
-    { name: "Liquidity Pool", path: "/contracts/liquidity" },
+    { name: "Friendship Faucet", path: "/contracts/friendship-faucet" },
+    // { name: "NFT Marketplace", path: "/contracts/marketplace" },
+    // { name: "Staking", path: "/contracts/staking" },
+    // { name: "Governance", path: "/contracts/governance" },
+    // { name: "Liquidity Pool", path: "/contracts/liquidity" },
   ]);
 
   return (

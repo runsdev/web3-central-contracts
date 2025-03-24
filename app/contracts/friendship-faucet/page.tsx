@@ -3,6 +3,37 @@
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 
+interface ErrorInfo {
+  code: number;
+  data?: {
+    cause?: string | null;
+    location?: string;
+  };
+  message: string;
+}
+
+interface ErrorPayload {
+  id: number;
+  jsonrpc: string;
+  method: string;
+  params: Array<{
+    data: string;
+    from: string;
+    gas: string;
+    to: string;
+  }>;
+}
+
+interface CustomError {
+  action: string;
+  reason: string;
+  info: {
+    error: ErrorInfo;
+    payload: ErrorPayload;
+  };
+  code: string;
+  version: string;
+}
 // ABI for the FriendshipFaucet contract
 const contractABI = [
   "function owner() view returns (address)",
@@ -17,6 +48,7 @@ const contractABI = [
 
 // Replace with your deployed contract address
 const contractAddress = "0xECE91dE3036544FA603b5cDEA07d7B655c717Fed";
+const ownerAddress = process.env.NEXT_PUBLIC_OWNER_WALLET_ADDRESS;
 
 export default function FriendshipFaucetPage() {
   // State variables
@@ -162,6 +194,36 @@ export default function FriendshipFaucetPage() {
     }
   };
 
+  const withdrawFunds = async () => {
+    if (!contract) return;
+
+    try {
+      setIsLoading(true);
+      setTransactionStatus("Withdrawing funds...");
+      setError("");
+
+      const tx = await contract.withdraw();
+      setTransactionStatus(
+        "Withdrawal transaction submitted! Waiting for confirmation..."
+      );
+
+      await tx.wait();
+      setTransactionStatus("Withdrawal successful!");
+
+      if (provider) {
+        updateContractBalance(provider);
+      }
+
+      setIsLoading(false);
+    } catch (err: unknown) {
+      const customError = err as unknown as CustomError;
+      console.error(customError);
+      setError(customError.info.error.message);
+      setTransactionStatus("");
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-md">
       <div className="bg-white p-6 shadow-lg rounded-lg">
@@ -234,13 +296,23 @@ export default function FriendshipFaucetPage() {
             )}
 
             <div className="border-t border-gray-200 my-4"></div>
-            <button
-              onClick={depositFunds}
-              disabled={isLoading}
-              className="mt-2 bg-purple-500 hover:bg-purple-600 text-white font-semibold py-1 px-3 rounded text-sm transition"
-            >
-              Deposit Funds (0.001 ETH)
-            </button>
+            <div className="flex flex-col gap-2">
+              <button
+                onClick={depositFunds}
+                disabled={isLoading}
+                className="bg-purple-500 hover:bg-purple-600 text-white font-semibold py-1 px-3 rounded text-sm transition"
+              >
+                Deposit Funds (0.001 ETH)
+              </button>
+
+              <button
+                onClick={withdrawFunds}
+                disabled={isLoading}
+                className="bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-3 rounded text-sm transition"
+              >
+                Withdraw Funds
+              </button>
+            </div>
 
             {transactionStatus && (
               <div className="mt-4 p-3 bg-blue-50 text-blue-800 rounded">
