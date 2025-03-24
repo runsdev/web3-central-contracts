@@ -65,6 +65,7 @@ export default function FriendshipFaucetPage() {
   const [transactionStatus, setTransactionStatus] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [rewardAmount, setRewardAmount] = useState<string>("0");
+  const [attemptCount, setAttemptCount] = useState<number>(0);
 
   // Connect wallet
   const connectWallet = async () => {
@@ -112,8 +113,10 @@ export default function FriendshipFaucetPage() {
     try {
       const isFriend = await contract.friendsList(userAddress);
       const hasReward = await contract.hasReceivedReward(userAddress);
+      const attempts = await contract.attempts(userAddress);
       setIsFriend(isFriend);
       setHasReward(hasReward);
+      setAttemptCount(attempts);
     } catch (err) {
       console.error("Error checking user status:", err);
     }
@@ -262,6 +265,9 @@ export default function FriendshipFaucetPage() {
               <p>
                 <strong>Reward Status:</strong>{" "}
                 {hasReward ? "Received ✓" : "Not received yet"}
+              </p>
+              <p>
+                <strong>Attempts:</strong> {3 - attemptCount} remaining
               </p>
             </div>
 
