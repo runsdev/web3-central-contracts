@@ -162,6 +162,9 @@ export default function FriendshipFaucetPage() {
       setIsLoading(false);
     } catch (err) {
       console.error(err);
+      if (account && contract) {
+        updateUserStatus(account, contract);
+      }
       setError("Failed to submit your guess. Please try again.");
       setTransactionStatus("");
       setIsLoading(false);
